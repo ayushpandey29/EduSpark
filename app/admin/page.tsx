@@ -29,6 +29,7 @@ import {
   CheckCircle,
   Menu,
   X,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useOrderStore, type Order } from "@/store/order-store";
@@ -163,7 +164,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#121A14] flex">
+    <div className="min-h-screen bg-[#121A14] flex dark text-foreground">
       {/* Sidebar */}
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1B5E2F] transform transition-transform lg:transform-none ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -242,8 +243,9 @@ export default function AdminDashboard() {
               >
                 <Menu className="h-6 w-6" />
               </button>
-              <h1 className="font-serif text-xl font-semibold text-primary-foreground">
+              <h1 className="font-serif text-xl font-semibold text-primary-foreground flex items-center gap-2">
                 {navItems.find((i) => i.id === activeTab)?.label || "Dashboard"}
+                {isRefreshing && <Loader2 className="h-4 w-4 animate-spin opacity-50" />}
               </h1>
             </div>
             <div className="flex items-center gap-3">

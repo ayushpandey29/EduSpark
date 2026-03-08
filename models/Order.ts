@@ -30,4 +30,8 @@ const OrderSchema: Schema = new Schema({
     status: { type: String, enum: ['Processing', 'Shipped', 'Delivered', 'pending', 'completed', 'cancelled'], default: 'Processing' },
 }, { timestamps: true });
 
+if (mongoose.models.Order) {
+    delete mongoose.models.Order;
+}
+
 export default mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);

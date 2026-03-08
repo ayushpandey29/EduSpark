@@ -147,7 +147,8 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       })),
       totalAmount: getTotal(),
-      transactionId: formData.transactionId,
+      transactionId: finalTransactionId,
+      customerName: formData.fullName,
       status: 'pending',
     };
 
