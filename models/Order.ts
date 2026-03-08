@@ -11,11 +11,13 @@ export interface IOrder extends Document {
     userEmail: string;
     items: IOrderItem[];
     totalAmount: number;
+    transactionId?: string;
     status: 'pending' | 'completed' | 'cancelled';
 }
 
 const OrderSchema: Schema = new Schema({
     userEmail: { type: String, required: true },
+    transactionId: { type: String },
     items: [{
         bookId: { type: Schema.Types.ObjectId, ref: 'Book', required: true },
         title: { type: String, required: true },

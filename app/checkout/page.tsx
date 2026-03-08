@@ -35,6 +35,7 @@ export default function CheckoutPage() {
     fullName: "",
     email: "",
     isGift: false,
+    transactionId: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [qrCodeUrl, setQrCodeUrl] = useState("");
@@ -81,6 +82,13 @@ export default function CheckoutPage() {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Invalid email address";
     }
+
+    // Validate transaction ID if it's visible (active tab is upi)
+    // Actually, let's just validate it if it's there
+    if (!formData.transactionId.trim()) {
+      newErrors.transactionId = "Transaction ID is required for verification";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -139,6 +147,7 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       })),
       totalAmount: getTotal(),
+      transactionId: formData.transactionId,
       status: 'pending',
     };
 
@@ -157,8 +166,8 @@ export default function CheckoutPage() {
 
       addOrder(order);
       clearCart();
-      toast.success("Payment successful!");
-      router.push(`/order-confirmation?txn=${transactionId}`);
+      toast.success("Payment submitted for verification!");
+      router.push(`/order-confirmation?txn=${formData.transactionId || transactionId}`);
     } catch (error) {
       console.error('Error saving order to MongoDB:', error);
       toast.error("There was an issue processing your order. Please try again.");
@@ -411,6 +420,24 @@ export default function CheckoutPage() {
                         </span>
                       </p>
 
+                      {/* Transaction ID Input */}
+                      <div className="max-w-sm mx-auto space-y-2 text-left">
+                        <Label htmlFor="transactionId" className="text-foreground">Transaction ID (UTR) *</Label>
+                        <Input
+                          id="transactionId"
+                          placeholder="Enter the 12-digit transaction ID"
+                          value={formData.transactionId}
+                          onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
+                          className={errors.transactionId ? "border-destructive" : ""}
+                        />
+                        <p className="text-[10px] text-muted-foreground">
+                          Enter the transaction ID after scanning the QR in your device and completing the payment. This will be verified.
+                        </p>
+                        {errors.transactionId && (
+                          <p className="text-xs text-destructive">{errors.transactionId}</p>
+                        )}
+                      </div>
+
                       {/* Save QR */}
                       <Button
                         variant="outline"
@@ -465,9 +492,9 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </div >
+      </main >
       <Footer />
-    </div>
+    </div >
   );
 }

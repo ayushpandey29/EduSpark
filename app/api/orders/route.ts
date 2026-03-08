@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Order from '@/models/Order';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
     try {
         await dbConnect();
