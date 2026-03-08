@@ -33,72 +33,66 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock login - accept any email/password
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    const users = JSON.parse(localStorage.getItem("eduspark-users") || "[]");
-    const existingUser = users.find((u: { email: string }) => u.email === email);
-    
-    if (existingUser) {
-      const loggedInUser = {
-        id: existingUser.id,
-        name: existingUser.name,
-        email: existingUser.email,
-      };
-      setUser(loggedInUser);
-      localStorage.setItem("eduspark-user", JSON.stringify(loggedInUser));
-      return true;
-    }
-    
-    // For demo, create user on the fly
-    const newUser = {
-      id: Date.now().toString(),
-      name: email.split("@")[0],
-      email,
-    };
-    setUser(newUser);
-    localStorage.setItem("eduspark-user", JSON.stringify(newUser));
-    return true;
-  };
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-  const signup = async (name: string, email: string, _password: string): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    const users = JSON.parse(localStorage.getItem("eduspark-users") || "[]");
-    const existingUser = users.find((u: { email: string }) => u.email === email);
-    
-    if (existingUser) {
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        localStorage.setItem("eduspark-user", JSON.stringify(data.user));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
       return false;
     }
-    
-    const newUser = {
-      id: Date.now().toString(),
-      name,
-      email,
-    };
-    
-    users.push(newUser);
-    localStorage.setItem("eduspark-users", JSON.stringify(users));
-    setUser(newUser);
-    localStorage.setItem("eduspark-user", JSON.stringify(newUser));
-    return true;
+  };
+
+  const signup = async (name: string, email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        localStorage.setItem("eduspark-user", JSON.stringify(data.user));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Signup error:', error);
+      return false;
+    }
   };
 
   const adminLogin = async (email: string, password: string): Promise<boolean> => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    if (email === "admin@eduspark.com" && password === "admin123") {
-      const adminUser = {
-        id: "admin",
-        name: "Admin",
-        email: "admin@eduspark.com",
-        isAdmin: true,
-      };
-      setUser(adminUser);
-      localStorage.setItem("eduspark-user", JSON.stringify(adminUser));
-      return true;
+    try {
+      const response = await fetch('/api/auth/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+        localStorage.setItem("eduspark-user", JSON.stringify(data.user));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
