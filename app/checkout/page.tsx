@@ -121,11 +121,11 @@ export default function CheckoutPage() {
     // Simulate payment verification
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    const transactionId = `ES${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    const finalTransactionId = formData.transactionId || `ES${Date.now()}${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
 
     const order = {
       id: Date.now().toString(),
-      transactionId,
+      transactionId: finalTransactionId,
       items: items.map((item) => ({ book: item.book, quantity: item.quantity })),
       subtotal: getSubtotal(),
       discount: getDiscount(),
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
       addOrder(order);
       clearCart();
       toast.success("Payment submitted for verification!");
-      router.push(`/order-confirmation?txn=${formData.transactionId || transactionId}`);
+      router.push(`/order-confirmation?txn=${finalTransactionId}`);
     } catch (error) {
       console.error('Error saving order to MongoDB:', error);
       toast.error("There was an issue processing your order. Please try again.");
