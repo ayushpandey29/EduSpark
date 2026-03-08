@@ -54,14 +54,32 @@ const statusConfig = {
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const { orders, updateOrderStatus } = useOrderStore();
+  const [orders, setOrders] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchOrders = async () => {
+    setIsRefreshing(true);
+    try {
+      const response = await fetch('/api/orders');
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(data);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      toast.error('Failed to load orders');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
+    fetchOrders();
   }, []);
 
   useEffect(() => {
@@ -78,21 +96,36 @@ export default function AdminDashboard() {
     );
   }
 
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
   const totalOrders = orders.length;
   const totalBooks = books.length;
   const pendingOrders = orders.filter((o) => o.status === "Processing").length;
 
   const filteredOrders = orders.filter(
     (order) =>
-      order.transactionId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase())
+      (order.transactionId || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.customerName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (order.userEmail || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleStatusChange = (orderId: string, status: Order["status"]) => {
-    updateOrderStatus(orderId, status);
-    toast.success(`Order status updated to ${status}`);
+  const handleStatusChange = async (orderId: string, status: string) => {
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, status }),
+      });
+
+      if (response.ok) {
+        toast.success(`Order status updated to ${status}`);
+        fetchOrders();
+      } else {
+        toast.error('Failed to update order status');
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Error updating status');
+    }
   };
 
   const handleExportCSV = () => {
@@ -100,8 +133,8 @@ export default function AdminDashboard() {
     const rows = orders.map((order) => [
       order.transactionId,
       order.customerName,
-      order.customerEmail,
-      order.total,
+      order.userEmail,
+      order.totalAmount,
       order.status,
       new Date(order.createdAt).toLocaleDateString(),
     ]);
@@ -133,9 +166,8 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#121A14] flex">
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1B5E2F] transform transition-transform lg:transform-none ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[#1B5E2F] transform transition-transform lg:transform-none ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -160,11 +192,10 @@ export default function AdminDashboard() {
                     setActiveTab(item.id);
                     setSidebarOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-primary-foreground/70 hover:bg-primary-foreground/10 hover:text-primary-foreground"
+                    }`}
                 >
                   <Icon className="h-5 w-5" />
                   {item.label}
@@ -312,26 +343,27 @@ export default function AdminDashboard() {
                     </thead>
                     <tbody>
                       {orders.slice(0, 5).map((order, i) => {
-                        const StatusIcon = statusConfig[order.status].icon;
+                        const status = order.status as keyof typeof statusConfig;
+                        const config = statusConfig[status] || statusConfig.Processing;
+                        const StatusIcon = config.icon;
                         return (
                           <tr
-                            key={order.id}
+                            key={order._id}
                             className={i % 2 === 0 ? "bg-background" : "bg-secondary/30"}
                           >
                             <td className="px-4 py-3 text-sm font-medium">
                               {order.transactionId}
                             </td>
                             <td className="px-4 py-3 text-sm">
-                              {order.customerName}
+                              {order.customerName || 'N/A'}
                             </td>
                             <td className="px-4 py-3 text-sm font-medium text-primary">
-                              ₹{order.total}
+                              ₹{order.totalAmount}
                             </td>
                             <td className="px-4 py-3">
                               <span
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${
-                                  statusConfig[order.status].color
-                                }`}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${config.color
+                                  }`}
                               >
                                 <StatusIcon className="h-3 w-3" />
                                 {order.status}
@@ -406,18 +438,18 @@ export default function AdminDashboard() {
                     <tbody>
                       {filteredOrders.map((order, i) => (
                         <tr
-                          key={order.id}
+                          key={order._id}
                           className={i % 2 === 0 ? "bg-background" : "bg-secondary/30"}
                         >
                           <td className="px-4 py-3 text-sm font-medium">
                             {order.transactionId}
                           </td>
-                          <td className="px-4 py-3 text-sm">{order.customerName}</td>
+                          <td className="px-4 py-3 text-sm">{order.customerName || 'N/A'}</td>
                           <td className="px-4 py-3 text-sm text-muted-foreground">
-                            {order.customerEmail}
+                            {order.userEmail}
                           </td>
                           <td className="px-4 py-3 text-sm font-medium text-primary">
-                            ₹{order.total}
+                            ₹{order.totalAmount}
                           </td>
                           <td className="px-4 py-3 text-sm text-muted-foreground">
                             {new Date(order.createdAt).toLocaleDateString()}
@@ -426,7 +458,7 @@ export default function AdminDashboard() {
                             <Select
                               value={order.status}
                               onValueChange={(value) =>
-                                handleStatusChange(order.id, value as Order["status"])
+                                handleStatusChange(order._id, value)
                               }
                             >
                               <SelectTrigger className="w-32 h-8">

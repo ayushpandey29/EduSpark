@@ -21,12 +21,38 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get('email');
 
-        if (!email) {
-            return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+        let query = {};
+        if (email) {
+            query = { userEmail: email };
         }
 
-        const orders = await Order.find({ userEmail: email }).sort({ createdAt: -1 });
+        const orders = await Order.find(query).sort({ createdAt: -1 });
         return NextResponse.json(orders);
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: Request) {
+    try {
+        await dbConnect();
+        const { orderId, status } = await request.json();
+
+        if (!orderId || !status) {
+            return NextResponse.json({ error: 'Order ID and status are required' }, { status: 400 });
+        }
+
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            { status },
+            { new: true }
+        );
+
+        if (!order) {
+            return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(order);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
