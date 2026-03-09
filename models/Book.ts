@@ -13,6 +13,7 @@ export interface IBook extends Document {
     language: string;
     format: string;
     gradient: string;
+    pdfUrl: string;
 }
 
 const BookSchema: Schema = new Schema({
@@ -28,6 +29,7 @@ const BookSchema: Schema = new Schema({
     language: { type: String, required: true },
     format: { type: String, required: true },
     gradient: { type: String, required: true },
+    pdfUrl: { type: String, required: true },
 }, { timestamps: true });
 
 export default mongoose.models.Book || mongoose.model<IBook>('Book', BookSchema);

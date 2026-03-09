@@ -12,6 +12,7 @@ export interface Book {
   language: string;
   format: string;
   gradient: string;
+  pdfUrl: string;
 }
 
 export const books: Book[] = [
@@ -19,7 +20,7 @@ export const books: Book[] = [
     id: "1",
     title: "Atomic Habits",
     author: "James Clear",
-    price: 299,
+    price: 999,
     category: "Self-Help",
     rating: 4.8,
     reviewCount: 2341,
@@ -28,7 +29,8 @@ export const books: Book[] = [
     pageCount: 320,
     language: "English",
     format: "PDF",
-    gradient: "from-[#6B1E2E] to-[#C9956C]"
+    gradient: "from-[#6B1E2E] to-[#C9956C]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "2",
@@ -43,7 +45,8 @@ export const books: Book[] = [
     pageCount: 296,
     language: "English",
     format: "PDF",
-    gradient: "from-[#2C3E6B] to-[#6C8EC9]"
+    gradient: "from-[#2C3E6B] to-[#6C8EC9]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "3",
@@ -58,7 +61,8 @@ export const books: Book[] = [
     pageCount: 256,
     language: "English",
     format: "PDF",
-    gradient: "from-[#1A5C3A] to-[#6CC98E]"
+    gradient: "from-[#1A5C3A] to-[#6CC98E]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "4",
@@ -73,7 +77,8 @@ export const books: Book[] = [
     pageCount: 208,
     language: "English",
     format: "PDF",
-    gradient: "from-[#5C3A1A] to-[#C99B6C]"
+    gradient: "from-[#5C3A1A] to-[#C99B6C]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "5",
@@ -88,7 +93,8 @@ export const books: Book[] = [
     pageCount: 224,
     language: "English",
     format: "PDF",
-    gradient: "from-[#3A1A5C] to-[#9B6CC9]"
+    gradient: "from-[#3A1A5C] to-[#9B6CC9]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "6",
@@ -103,7 +109,8 @@ export const books: Book[] = [
     pageCount: 224,
     language: "English",
     format: "PDF",
-    gradient: "from-[#5C1A1A] to-[#C96C6C]"
+    gradient: "from-[#5C1A1A] to-[#C96C6C]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "7",
@@ -118,7 +125,8 @@ export const books: Book[] = [
     pageCount: 464,
     language: "English",
     format: "PDF",
-    gradient: "from-[#1A3A5C] to-[#6C9BC9]"
+    gradient: "from-[#1A3A5C] to-[#6C9BC9]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "8",
@@ -133,7 +141,8 @@ export const books: Book[] = [
     pageCount: 336,
     language: "English",
     format: "PDF",
-    gradient: "from-[#3A5C1A] to-[#8CC96C]"
+    gradient: "from-[#3A5C1A] to-[#8CC96C]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "9",
@@ -148,7 +157,8 @@ export const books: Book[] = [
     pageCount: 320,
     language: "English",
     format: "PDF",
-    gradient: "from-[#5C4A1A] to-[#C9B06C]"
+    gradient: "from-[#5C4A1A] to-[#C9B06C]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   },
   {
     id: "10",
@@ -163,7 +173,8 @@ export const books: Book[] = [
     pageCount: 208,
     language: "English",
     format: "PDF",
-    gradient: "from-[#1A4A5C] to-[#6CB8C9]"
+    gradient: "from-[#1A4A5C] to-[#6CB8C9]",
+    pdfUrl: "https://drive.google.com/uc?export=download&id=1nUyegdtbjcGuIQ68EIzxeAKWBijFxWQq"
   }
 ];
 

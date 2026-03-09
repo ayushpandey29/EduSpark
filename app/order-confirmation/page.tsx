@@ -64,19 +64,19 @@ function OrderConfirmationContent() {
     if (!order) return;
 
     const doc = new jsPDF();
-    
+
     // Header
     doc.setFillColor(59, 178, 91);
     doc.rect(0, 0, 210, 40, "F");
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.text("EduSpark Books", 20, 25);
-    
+
     // Order details
     doc.setTextColor(28, 28, 30);
     doc.setFontSize(12);
     doc.text("Order Receipt", 20, 55);
-    
+
     doc.setFontSize(10);
     doc.text(`Transaction ID: ${order.transactionId}`, 20, 65);
     doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`, 20, 72);
@@ -125,7 +125,8 @@ function OrderConfirmationContent() {
     toast.success("Receipt downloaded!");
   };
 
-  const handleDownloadBook = (bookTitle: string) => {
+  const handleDownloadBook = (bookId: string, bookTitle: string) => {
+    window.open(`/api/books/${bookId}/download`, '_blank');
     toast.success(`Your eBook "${bookTitle}" is ready!`);
   };
 
@@ -280,7 +281,7 @@ function OrderConfirmationContent() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleDownloadBook(item.book.title)}
+                          onClick={() => handleDownloadBook(item.book.id, item.book.title)}
                           className="border-accent text-accent hover:bg-accent hover:text-accent-foreground"
                         >
                           <Download className="h-4 w-4 mr-2" />

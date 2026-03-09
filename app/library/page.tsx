@@ -21,7 +21,8 @@ export default function LibraryPage() {
     setMounted(true);
   }, []);
 
-  const handleDownload = (bookTitle: string) => {
+  const handleDownload = (bookId: string, bookTitle: string) => {
+    window.open(`/api/books/${bookId}/download`, '_blank');
     toast.success(`Downloading "${bookTitle}"...`);
   };
 
@@ -156,7 +157,7 @@ export default function LibraryPage() {
                       </Link>
                       <Button
                         size="sm"
-                        onClick={() => handleDownload(book.title)}
+                        onClick={() => handleDownload(book.id, book.title)}
                         className="flex-1 bg-accent hover:bg-accent/90 text-accent-foreground"
                       >
                         <Download className="h-4 w-4 mr-2" />
